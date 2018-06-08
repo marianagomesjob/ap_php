@@ -1,0 +1,29 @@
+version: "3"
+
+volumes:
+  just-mysql_data:
+    driver: local
+
+services:
+  just-php:
+    build:
+      dockerfile: ./.docker/php/Dockerfile
+      context: .
+    container_name: just-php
+    volumes:
+      - ./public:/var/www/app
+      - ./.docker/php/etc/apache2/envvars:/etc/apache2/envvars
+    ports:
+      - 8080:80
+      - 4443:443
+    links:
+      - just-mysql
+
+  just-mysql:
+    image: mysql:5.5
+    container_name: just-mysql
+    volumes:
+      - just-mysql_data:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=dev
+      - MYSQL_DATABASE=webApp
